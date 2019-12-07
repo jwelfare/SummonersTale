@@ -21,7 +21,7 @@ namespace SummonersTale.GameStates
 
         public TitleIntroState(Game game) : base(game)
         {
-            game.Services.AddService(typeof(ITitleIntroState), this);
+            game.Services.AddService<ITitleIntroState>(this);
         }
 
         public override void Initialize()

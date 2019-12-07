@@ -12,21 +12,17 @@
 
   <ItemGroup>
     <Folder Include="StateManager\" />
-    <Folder Include="Content\Fonts\" />
-    <Folder Include="Content\GameScreens\" />
     <Folder Include="GameStates\" />
+    <Folder Include="Components\" />
   </ItemGroup>
+
   <ItemGroup>
-    <None Remove="Content\bin\DesktopGL\GameScreens\TitleScreen.xnb" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Update="Content\bin\DesktopGL\GameScreens\TitleScreen.xnb">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Content\bin\DesktopGL\GameScreens\TitleScreen.xnb">
+    <Content Include="Content\**\*.*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Content\bin\DesktopGL\GameScreens\TitleScreen.xnb" />
   </ItemGroup>
 </Project>
