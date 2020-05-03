@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-
-namespace SummonersTale.Components
+﻿namespace SummonersTale.Components
 {
+    using System.Collections.Generic;
+    using Microsoft.Xna.Framework;
+    using Microsoft.Xna.Framework.Graphics;
+    using Microsoft.Xna.Framework.Input;
+
     public class MenuComponent
     {
         const int MENUPADDING = 50;
@@ -14,16 +14,16 @@ namespace SummonersTale.Components
         readonly List<string> menuItems = new List<string>();
 
         int selectedIndex = -1;
-        bool mouseOver;
 
         int width;
         int height;
 
-        Color defaultColor;
-        Color highlightColor;
+        Color defaultColor = Color.White;
+        Color highlightColor = Color.Beige;
 
-        Texture2D texture;
         Vector2 position;
+
+        bool mouseOver;
 
         public int Height
         {
@@ -33,6 +33,12 @@ namespace SummonersTale.Components
         public int Width
         {
             get { return width;  }
+        }
+
+        public Vector2 Position
+        {
+            get { return position; }
+            set { position = value; }
         }
 
         public bool MouseOver
@@ -57,21 +63,20 @@ namespace SummonersTale.Components
             get { return selectedIndex; }
             set
             {
-                MathHelper.Clamp(
+                selectedIndex = MathHelper.Clamp(
                     value,
                     0,
                     menuItems.Count - 1);
             }
         }
 
-        public MenuComponent(SpriteFont spriteFont, Texture2D texture)
+        public MenuComponent(SpriteFont spriteFont)
         {
-            this.mouseOver = false;
+            mouseOver = false;
             this.spriteFont = spriteFont;
-            this.texture = texture;
         }
 
-        public MenuComponent(SpriteFont spriteFont, Texture2D texture, string[] menuItems) : this(spriteFont, texture)
+        public MenuComponent(SpriteFont spriteFont, string[] menuItems) : this(spriteFont)
         {
             SetMenuItems(menuItems);
 
@@ -90,7 +95,7 @@ namespace SummonersTale.Components
 
         private void MeassureMenu()
         {
-            width = texture.Width;
+            width = 0;
             height = 0;
 
             foreach (string itemString in menuItems)
@@ -98,75 +103,79 @@ namespace SummonersTale.Components
                 Vector2 size = spriteFont.MeasureString(itemString);
 
                 if (size.X > width)
+                {
                     width = (int)size.X;
+                }
 
-                height += texture.Height + MENUPADDING;
+                if (size.Y > height)
+                {
+                    height = (int)size.Y;
+                }
+
+                height += (int)size.Y + MENUPADDING;
             }
 
             height -= MENUPADDING;
         }
 
-        public void Update(GameTime gameTime, PlayerIndex playerIndex)
+        public void Update()
         {
-            Vector2 menuPosition = position;
-            Point mousePosition = InputSate.MouseState.Position;
+            Vector2 currentPosition = this.position;
+            Point mousePosition = InputState.MouseState.Position;
 
             Rectangle buttonRectangle;
-            mouseOver = false;
+            this.mouseOver = false;
 
-            for (var i = 0; i < menuItems.Count; i++)
+            for (var i = 0; i < this.menuItems.Count; i++)
             {
-                buttonRectangle = new Rectangle((int)position.X, (int)position.Y, texture.Width, texture.Height);
+                Vector2 size = this.spriteFont.MeasureString(this.menuItems[i]);
+
+                buttonRectangle = new Rectangle(
+                    (int)currentPosition.X,
+                    (int)currentPosition.Y,
+                    (int)size.X,
+                    (int)size.Y);
 
                 if (buttonRectangle.Contains(mousePosition))
                 {
-                    mouseOver = true;
-                    selectedIndex = i;
+                    this.mouseOver = true;
+                    this.selectedIndex = i;
                 }
 
-                menuPosition.Y += MENUPADDING + texture.Height;
+                currentPosition.Y += MENUPADDING + size.Y;
             }
 
-            if (!mouseOver && (InputSate.CheckKeyReleased(Keys.Up)))
+            if (!mouseOver && InputState.CheckKeyReleased(Keys.Up))
             {
-                SelectedIndex = selectedIndex - 1;
+                this.SelectedIndex = this.selectedIndex - 1;
             }
-            else if (!mouseOver && (InputSate.CheckKeyReleased(Keys.Down)))
+            else if (!mouseOver && InputState.CheckKeyReleased(Keys.Down))
             {
-                SelectedIndex = selectedIndex + 1;
+                this.SelectedIndex = this.selectedIndex + 1;
             }
         }
 
-        public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
+        public void Draw(SpriteBatch spriteBatch)
         {
-            Vector2 menuPosition = position;
+            Vector2 currentPosition = this.position;
             Color myColor;
 
-            for (int i = 0; i < menuItems.Count; i++)
+            for (int i = 0; i < this.menuItems.Count; i++)
             {
-                if (i == SelectedIndex)
-                {
-                    myColor = HighlightColor;
-                }
-                else
-                {
-                    myColor = DefaultColor;
-                }
+                if (i == this.SelectedIndex) {
+                    myColor = this.HighlightColor; }
+                else {
+                    myColor = this.DefaultColor; }
 
-                spriteBatch.Draw(texture, menuPosition, Color.White);
+                Vector2 textSize = this.spriteFont.MeasureString(this.menuItems[i]);
 
-                Vector2 textSize = spriteFont.MeasureString(menuItems[i]);
-                Vector2 textPosition = menuPosition + new Vector2(
-                    (int)(texture.Width - textSize.X) / 2,
-                    (int)(texture.Height - textSize.Y) / 2
-                );
-
-                spriteBatch.DrawString(spriteFont,
-                    menuItems[i],
-                    textPosition,
+                spriteBatch.DrawString(
+                    this.spriteFont,
+                    this.menuItems[i],
+                    currentPosition,
                     myColor);
 
-                menuPosition.Y += texture.Height + 50;
+                currentPosition.Y += textSize.Y + 50;
             }
         }
     }

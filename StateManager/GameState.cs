@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
-
-namespace SummonersTale.StateManager
+﻿namespace SummonersTale.StateManager
 {
-    public interface IGameState
-    {
-        IGameState Tag { get; }
-        PlayerIndex? PlayerIndexInControl { get; set; }
-    }
+    using System;
+    using System.Collections.Generic;
+    using Microsoft.Xna.Framework;
+    using Microsoft.Xna.Framework.Content;
 
     // DrawableGameComponent adds LoadContent, Update and Draw methods to the game state so they can be called from other classes
-    public abstract partial class GameState : DrawableGameComponent, IGameState
+    public abstract class GameState : DrawableGameComponent, IGameState
     {
         // Allows for retrieving another state from the State Manager in use in other game states
         protected IGameState tag;
@@ -28,28 +22,29 @@ namespace SummonersTale.StateManager
 
         public PlayerIndex? PlayerIndexInControl
         {
-            get { return indexInControl; }
-            set { indexInControl = value; }
+            get { return this.indexInControl; }
+            set { this.indexInControl = value; }
         }
 
         public List<GameComponent> Components
         {
-            get { return childComponents; }
+            get { return this.childComponents; }
         }
 
         public IGameState Tag
         {
-            get { return tag; }
+            get { return this.tag; }
         }
 
-        public GameState(Game game) : base(game)
+        protected GameState(Game game)
+            : base(game)
         {
-            tag = this;
-            childComponents = new List<GameComponent>();
-            content = Game.Content;
+            this.tag = this;
+            this.childComponents = new List<GameComponent>();
+            this.content = Game.Content;
 
             // Dependency injection
-            manager = (IStateManager)Game.Services.GetService(typeof(IStateManager));
+            this.manager = (IStateManager)Game.Services.GetService(typeof(IStateManager));
         }
 
         protected override void LoadContent()
@@ -59,7 +54,7 @@ namespace SummonersTale.StateManager
 
         public override void Update(GameTime gameTime)
         {
-            foreach (GameComponent component in childComponents)
+            foreach (GameComponent component in this.childComponents)
             {
                 if (component.Enabled)
                 {
@@ -74,7 +69,7 @@ namespace SummonersTale.StateManager
         {
             base.Draw(gameTime);
 
-            foreach (GameComponent component in childComponents)
+            foreach (GameComponent component in this.childComponents)
             {
                 if (component is DrawableGameComponent && ((DrawableGameComponent)component).Visible)
                 {
@@ -85,22 +80,22 @@ namespace SummonersTale.StateManager
 
         protected internal virtual void StateChanged(object sender, EventArgs e)
         {
-            if (manager.CurrentState == tag)
+            if (this.manager.CurrentState == tag)
             {
-                Show();
+                this.Show();
             }
             else
             {
-                Hide();
+                this.Hide();
             }
         }
 
         public virtual void Show()
         {
-            Enabled = true;
-            Visible = true;
+            this.Enabled = true;
+            this.Visible = true;
 
-            foreach (GameComponent component in childComponents)
+            foreach (GameComponent component in this.childComponents)
             {
                 component.Enabled = true;
 
@@ -113,10 +108,10 @@ namespace SummonersTale.StateManager
 
         public virtual void Hide()
         {
-            Enabled = false;
-            Visible = false;
+            this.Enabled = false;
+            this.Visible = false;
 
-            foreach (GameComponent component in childComponents)
+            foreach (GameComponent component in this.childComponents)
             {
                 component.Enabled = false;
 

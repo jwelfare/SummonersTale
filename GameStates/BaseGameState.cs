@@ -1,23 +1,19 @@
-﻿using System;
-using Microsoft.Xna.Framework;
-using SummonersTale.StateManager;
-
-namespace SummonersTale.GameStates
+﻿namespace SummonersTale.GameStates
 {
+    using System;
+    using Microsoft.Xna.Framework;
+    using SummonersTale.StateManager;
+
     public class BaseGameState : GameState
     {
         protected static Random random = new Random();
 
         protected Game1 GameRef;
 
-        public BaseGameState(Game game) : base(game)
+        public BaseGameState(Game game)
+            : base(game)
         {
-            GameRef = (Game1)game;
-        }
-
-        protected override void LoadContent()
-        {
-            base.LoadContent();
+            this.GameRef = (Game1)game;
         }
 
         public override void Update(GameTime gameTime)
@@ -28,6 +24,11 @@ namespace SummonersTale.GameStates
         public override void Draw(GameTime gameTime)
         {
             base.Draw(gameTime);
+        }
+
+        protected override void LoadContent()
+        {
+            base.LoadContent();
         }
     }
 }

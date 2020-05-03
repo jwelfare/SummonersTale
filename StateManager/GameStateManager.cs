@@ -1,18 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.Xna.Framework;
-
-namespace SummonersTale.StateManager
+﻿namespace SummonersTale.StateManager
 {
-    public interface IStateManager
-    {
-        IGameState CurrentState { get; }
-        event EventHandler StateChanged;                        // This event will trigger the event handler in all active games states
-        void PushState(GameState state, PlayerIndex? index);
-        void ChangeState(GameState state, PlayerIndex? index);
-        void PopState();
-        bool ContainsState(GameState state);
-    }
+    using System;
+    using System.Collections.Generic;
+    using Microsoft.Xna.Framework;
 
     // The GameStateManager inherits from GameComponent so it can be registered as a service and have its Update method called automatically
     public class GameStateManager : GameComponent, IStateManager
@@ -34,72 +24,73 @@ namespace SummonersTale.StateManager
         {
             get
             {
-                return gameStates.Peek();
+                return this.gameStates.Peek();
             }
         }
 
-        public GameStateManager(Game game) : base(game)
+        public GameStateManager(Game game)
+            : base(game)
         {
-            Game.Services.AddService(typeof(IStateManager), this);
+            this.Game.Services.AddService(typeof(IStateManager), this);
         }
 
         public void PushState(GameState state, PlayerIndex? index)
         {
-            drawOrder += drawOrderInc;
-            AddState(state, index);
-            OnStateChanged();
+            this.drawOrder += drawOrderInc;
+            this.AddState(state, index);
+            this.OnStateChanged();
         }
 
         private void AddState(GameState state, PlayerIndex? index)
         {
-            gameStates.Push(state);
+            this.gameStates.Push(state);
             state.PlayerIndexInControl = index;
-            Game.Components.Add(state);
-            StateChanged += state.StateChanged;
+            this.Game.Components.Add(state);
+            this.StateChanged += state.StateChanged;
         }
 
         public void PopState()
         {
-            if (gameStates.Count != 0)
+            if (this.gameStates.Count != 0)
             {
-                RemoveState();
-                drawOrder -= drawOrderInc;
-                OnStateChanged();
+                this.RemoveState();
+                this.drawOrder -= drawOrderInc;
+                this.OnStateChanged();
             }
         }
 
         private void RemoveState()
         {
-            GameState state = gameStates.Peek();
-            StateChanged -= state.StateChanged;
-            Game.Components.Remove(state);
-            gameStates.Pop();
+            GameState state = this.gameStates.Peek();
+            this.StateChanged -= state.StateChanged;
+            this.Game.Components.Remove(state);
+            this.gameStates.Pop();
         }
 
         public void ChangeState(GameState state, PlayerIndex? index)
         {
-            while (gameStates.Count > 0)
+            while (this.gameStates.Count > 0)
             {
-                RemoveState();
+                this.RemoveState();
             }
 
-            drawOrder = startDrawOrder;
+            this.drawOrder = startDrawOrder;
             state.DrawOrder = drawOrder;
-            drawOrder += drawOrderInc;
-            AddState(state, index);
-            OnStateChanged();
+            this.drawOrder += drawOrderInc;
+            this.AddState(state, index);
+            this.OnStateChanged();
         }
 
         public bool ContainsState(GameState state)
         {
-            return gameStates.Contains(state);
+            return this.gameStates.Contains(state);
         }
 
         protected internal virtual void OnStateChanged()
         {
-            if (StateChanged != null)
+            if (this.StateChanged != null)
             {
-                StateChanged(this, null);
+                this.StateChanged(this, null);
             }
         }
     }

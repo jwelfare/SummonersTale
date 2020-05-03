@@ -1,16 +1,10 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
-
-namespace SummonersTale.Components
+﻿namespace SummonersTale.Components
 {
-    public enum MouseButtons
-    {
-        Middle,
-        Left,
-        Right
-    }
+    using System;
+    using Microsoft.Xna.Framework;
+    using Microsoft.Xna.Framework.Input;
 
-    public class InputSate : GameComponent
+    public class InputState : GameComponent
     {
         private static KeyboardState currentKeyboardState = Keyboard.GetState();
         private static KeyboardState previousKeyboardState = Keyboard.GetState();
@@ -38,10 +32,15 @@ namespace SummonersTale.Components
             get { return previousKeyboardState; }
         }
 
-        public InputSate(Game game) : base(game) { }
+        public InputState(Game game)
+            : base(game)
+        {
+        }
 
         public override void Update(GameTime gameTime)
         {
+            Console.WriteLine();
+
             previousKeyboardState = currentKeyboardState;
             currentKeyboardState = Keyboard.GetState();
             previousMouseState = currentMouseState;
@@ -66,14 +65,24 @@ namespace SummonersTale.Components
             switch (button)
             {
                 case MouseButtons.Left:
-                    return (currentMouseState.LeftButton == ButtonState.Released) && (previousMouseState.LeftButton == ButtonState.Pressed);
+                    return (currentMouseState.LeftButton == ButtonState.Released) &&
+                        (previousMouseState.LeftButton == ButtonState.Pressed);
                 case MouseButtons.Right:
-                    return (currentMouseState.RightButton == ButtonState.Released) && (previousMouseState.RightButton == ButtonState.Pressed);
+                    return (currentMouseState.RightButton == ButtonState.Released) &&
+                        (previousMouseState.RightButton == ButtonState.Pressed);
                 case MouseButtons.Middle:
-                    return (currentMouseState.MiddleButton == ButtonState.Released) && (previousMouseState.MiddleButton == ButtonState.Pressed);
+                    return (currentMouseState.MiddleButton == ButtonState.Released) &&
+                        (previousMouseState.MiddleButton == ButtonState.Pressed);
             }
 
             return false;
         }
+    }
+
+    public enum MouseButtons
+    {
+        Middle,
+        Left,
+        Right,
     }
 }

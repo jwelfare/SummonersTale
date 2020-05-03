@@ -1,11 +1,10 @@
-﻿using System;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using SummonersTale.StateManager;
-
-namespace SummonersTale.GameStates
+﻿namespace SummonersTale.GameStates
 {
-    public interface ITitleIntroState : IGameState { }
+    using System;
+    using Microsoft.Xna.Framework;
+    using Microsoft.Xna.Framework.Graphics;
+    using Microsoft.Xna.Framework.Input;
+    using SummonersTale.Components;
 
     public class TitleIntroState : BaseGameState, ITitleIntroState
     {
@@ -15,9 +14,9 @@ namespace SummonersTale.GameStates
 
         TimeSpan elapsed;
 
-        // Vector2 position;
-        // SpriteFont font;
-        // string message;
+        Vector2 messagePosition;
+        SpriteFont messageFont;
+        string message;
 
         public TitleIntroState(Game game) : base(game)
         {
@@ -29,26 +28,38 @@ namespace SummonersTale.GameStates
             backgroundDestination = Game1.ScreenRectangle;
             elapsed = TimeSpan.Zero;
 
-            //message = "PRESS SPACE TO CONTINUE";
+            message = "PRESS SPACE TO CONTINUE";
 
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
-            background = content.Load<Texture2D>(@"bin/DesktopGL/GameScreens/TitleScreen");
+            background = content.Load<Texture2D>(@"bin/GameScreens/TitleScreen");
 
-            //font = content.Load<SpriteFont>(@"Fonts\InterfaceFont");
-            //Vector2 size = font.MeasureString(message);
-            //position = new Vector2((Game1.ScreenRectangle.Width - size.X) / 2, Game1.ScreenRectangle.Bottom - 50 - font.LineSpacing);
+            messageFont = content.Load<SpriteFont>(@"bin/Fonts/InterfaceFont");
+            Vector2 size = messageFont.MeasureString(message);
+
+            messagePosition = new Vector2(
+                (Game1.ScreenRectangle.Width - size.X) / 2,
+                Game1.ScreenRectangle.Bottom - 50 - messageFont.LineSpacing);
 
             base.LoadContent();
         }
 
         public override void Update(GameTime gameTime)
         {
-            indexInControl = PlayerIndex.One;
+            // indexInControl = PlayerIndex.One;
+            // elapsed += gameTime.ElapsedGameTime;
+            // base.Update(gameTime);
+            PlayerIndex? index = null;
             elapsed += gameTime.ElapsedGameTime;
+
+            if (InputState.CheckKeyReleased(Keys.Space) || InputState.CheckKeyReleased(Keys.Enter) ||
+                InputState.CheckMouseReleased(MouseButtons.Left))
+            {
+                manager.ChangeState((MainMenuState)GameRef.MainMenuState, index);
+            }
 
             base.Update(gameTime);
         }
@@ -56,11 +67,13 @@ namespace SummonersTale.GameStates
         public override void Draw(GameTime gameTime)
         {
             GameRef.SpriteBatch.Begin();
-            GameRef.SpriteBatch.Draw(background, backgroundDestination, Color.White);
-            GameRef.SpriteBatch.End();
 
-            //Color color = new Color(1f, 1f, 1f) * (float)Math.Abs(Math.Sin(elapsed.TotalSeconds * 2));
-            //GameRef.SpriteBatch.DrawString(font, message, position, color);
+            GameRef.SpriteBatch.Draw(background, backgroundDestination, Color.White);
+
+            Color color = new Color(1f, 1f, 1f) * (float)Math.Abs(Math.Sin(elapsed.TotalSeconds * 2));
+            GameRef.SpriteBatch.DrawString(messageFont, message, messagePosition, color);
+
+            GameRef.SpriteBatch.End();
 
             base.Draw(gameTime);
         }
